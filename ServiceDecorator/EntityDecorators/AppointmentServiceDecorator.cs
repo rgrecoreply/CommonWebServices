@@ -24,6 +24,7 @@ namespace ServiceDecorator.EntityDecorators
             if (cache.Contains(_cacheKey))
             {
                 return cache.Get(_cacheKey) as List<Appointment>;
+                ;
             }
             else
             {
