@@ -53,10 +53,7 @@ namespace CommonWebApi.App_Start
                 kernel.Bind<Func<IKernel>>().ToMethod(ctx => () => new Bootstrapper().Kernel);
                 kernel.Bind<IHttpModule>().To<HttpApplicationInitializationHttpModule>();
                 RegisterServices(kernel);
-                // Resolver for Web Api
                 GlobalConfiguration.Configuration.DependencyResolver = new NinjectDependencyResolver(kernel);
-                // Resolver for MVC - DA CONFIGURARE
-                //DependencyResolver.SetResolver(new NinjectDependencyResolver(kernel));
                 return kernel;
             }
             catch

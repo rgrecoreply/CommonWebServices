@@ -53,22 +53,17 @@ namespace PersistenceContext.Implementations
 
         public T Get<T>(QueryHelper<T> query) where T : CrmEntity
         {
-            return Activator.CreateInstance(typeof(T), CrmService.RetrieveMultiple(query).FirstOrDefault()) as T;
+            return CrmService.RetrieveMultiple(query).FirstOrDefault();
         }
 
         public T Get<T>(Guid id) where T : CrmEntity
         {
-            return Activator.CreateInstance(typeof(T), CrmService.Retrieve(AttributeHelper.GetAttributeName<T, string>(x => x.LogicalName), id, new ColumnSet(true))) as T;
+            return CrmService.Retrieve<T>(id);
         }
 
         public IEnumerable<T> GetAll<T>() where T : CrmEntity
         {
-            return CrmService.RetrieveMultiple(new QueryExpression()
-            {
-                EntityName = AttributeHelper.GetAttributeName<T, string>(x => x.LogicalName),
-                ColumnSet = new ColumnSet(true),
-                NoLock = true
-            }).Entities.Select(x => Activator.CreateInstance(typeof(T), x) as T);
+            return CrmService.RetrieveMultiple(QueryHelper<T>.CreateInstance().AllColumns());
         }
 
         public IEnumerable<T> GetMultiple<T>(QueryHelper<T> query) where T : CrmEntity

@@ -13,6 +13,13 @@ namespace PersistenceContext.Bases
 {
     public abstract class CrmContextBase : ICrmContext
     {
+        private readonly object lockObj = new object();
+        private readonly int refreshInterval = 15 * 60;
+        private readonly string _templateUser = "__usr__";
+        private readonly string _templatePssw = "__pssw__";
+
+        private static readonly Dictionary<string, DateTime> lastActiveContextRefreshes = new Dictionary<string, DateTime>();
+        private static readonly Dictionary<string, IOrganizationService> activeContext = new Dictionary<string, IOrganizationService>();
         private IOrganizationService _crmService;
 
         public IOrganizationService CrmService
@@ -27,13 +34,42 @@ namespace PersistenceContext.Bases
             }
         }
 
+        public IOrganizationService GetService(string userId)
+        {
+            lock (lockObj)
+            {
+                if (!activeContext.TryGetValue(userId, out IOrganizationService context)) { }
+
+                if (!lastActiveContextRefreshes.TryGetValue(userId, out DateTime lastRefresh))
+                {
+                    lastActiveContextRefreshes.Add(userId, DateTime.Now);
+                }
+
+                if ((DateTime.Now - lastRefresh).TotalSeconds >= refreshInterval)
+                {
+                    lastActiveContextRefreshes.Remove(userId);
+                    activeContext.Remove(userId);
+                    return null;
+                }
+
+                return context;
+            }
+        }
+
         public IOrganizationService GetService()
         {
             string connectionStringName = ConfigurationManager.AppSettings["CrmConnectionStringName"];
-            return GetService(connectionStringName);
+            return GetServiceByConnectionStringName(connectionStringName);
         }
 
-        public IOrganizationService GetService(string connectionStringName)
+        public IOrganizationService GetService(string username, string password)
+        {
+            string connectionStringName = ConfigurationManager.AppSettings["CrmAuthentication"];
+            connectionStringName = connectionStringName.Replace(_templateUser, username).Replace(_templatePssw, password);
+            return GetServiceByConnectionStringName(connectionStringName);
+        }
+
+        public IOrganizationService GetServiceByConnectionStringName(string connectionStringName)
         {
             string connectionString = ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
             return GetCrmServiceByConnectionString(connectionString);
@@ -44,7 +80,15 @@ namespace PersistenceContext.Bases
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             CrmServiceClient serviceClient = new CrmServiceClient(connectionString);
 
-            return serviceClient.OrganizationWebProxyClient != null ? serviceClient.OrganizationWebProxyClient : (IOrganizationService)serviceClient.OrganizationServiceProxy;
+            IOrganizationService service = serviceClient.OrganizationWebProxyClient != null ? serviceClient.OrganizationWebProxyClient : (IOrganizationService)serviceClient.OrganizationServiceProxy;
+            
+            if(service != null)
+            {
+                activeContext.Add(serviceClient.CallerId.ToString(), service);
+                lastActiveContextRefreshes.Add(serviceClient.CallerId.ToString(), DateTime.Now);
+            }
+
+            return service;
         }
     }
 }

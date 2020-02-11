@@ -10,6 +10,7 @@ namespace Services.Interfaces
 {
     public interface IService<T> where T : CrmEntity
     {
+
         T Get(QueryHelper<T> query);
         T Get(Guid id);
         IEnumerable<T> GetMultiple(QueryHelper<T> query);

@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNet.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
+using Services.EntityInterfaces;
+using System.Web.Http;
 
 namespace CommonWebApi.App_Start
 {
@@ -18,9 +21,10 @@ namespace CommonWebApi.App_Start
             // and to use a cookie to temporarily store information about a user logging in with a third party login provider
             app.UseCookieAuthentication(new CookieAuthenticationOptions());
             app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
-
+            
             // Enable the application to use bearer tokens to authenticate users
             //app.UseOAuthBearerTokens(OAuthOptions);
         }
+
     }
 }

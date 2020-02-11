@@ -10,7 +10,9 @@ namespace PersistenceContext.Interfaces
     public interface ICrmContext
     {
         IOrganizationService GetService();
-        IOrganizationService GetService(string connectionString);
+        IOrganizationService GetService(string userId);
+        IOrganizationService GetService(string username, string password);
+        IOrganizationService GetServiceByConnectionStringName(string connectionStringName);
         IOrganizationService GetCrmServiceByConnectionString(string connectionString);
     }
 }

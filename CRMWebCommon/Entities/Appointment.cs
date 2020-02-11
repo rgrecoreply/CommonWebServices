@@ -42,5 +42,21 @@ namespace CRMWebCommon.Entities
         [JsonProperty("attachmentcount")]
 		public int? AttachmentCount { get { return GetValue<int?>("attachmentcount"); } set { SetValue("attachmentcount", value); } }
 
+        [DataMember(Name = "subject")]
+        [JsonProperty("subject")]
+        public string Subject { get { return GetValue<string>("subject"); } set { SetValue("subject", value); } }
+
+        [DataMember(Name = "location")]
+        [JsonProperty("location")]
+        public string Location { get { return GetValue<string>("location"); } set { SetValue("location", value); } }
+
+        [DataMember(Name = "scheduledstart")]
+        [JsonProperty("scheduledstart")]
+        public DateTime StartTime { get { return GetValue<DateTime>("scheduledstart"); } set { SetValue("scheduledstart", value); } }
+
+        [DataMember(Name = "scheduledend")]
+        [JsonProperty("scheduledend")]
+        public DateTime EndTime { get { return GetValue<DateTime>("scheduledend"); } set { SetValue("scheduledend", value); } }
+
     }
 }

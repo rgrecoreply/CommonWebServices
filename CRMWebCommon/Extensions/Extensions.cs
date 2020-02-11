@@ -1,8 +1,10 @@
 ﻿using CRMWebCommon.EntityWrappers;
 using CRMWebCommon.Helpers;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace CRMWebCommon.Extensions
@@ -35,6 +37,10 @@ namespace CRMWebCommon.Extensions
             return QueryHelper<T>.CreateInstance().GetEntity(service, id, lambda);
         }
         
+        public static T Retrieve<T>(this IOrganizationService service, Guid id) where T : CrmEntity
+        {
+            return QueryHelper<T>.CreateInstance().AddCondition(x => x.LogicalNameId, ConditionOperator.Equal, id).AllColumns().GetEntities(service).FirstOrDefault();
+        }
         public static IEnumerable<T> RetrieveMultiple<T>(this IOrganizationService service, QueryHelper<T> query) where T : CrmEntity
         {
             return query.GetEntities(service);

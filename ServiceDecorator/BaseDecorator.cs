@@ -11,10 +11,14 @@ namespace ServiceDecorator
     public class BaseDecorator<T> : IService<T> where T : CrmEntity
     {
         private readonly IService<T> _service;
+        private QueryHelper<T> _query;
+
+        public QueryHelper<T> Query { get { return _query; } }
 
         public BaseDecorator(IService<T> service)
         {
             _service = service;
+            _query = new QueryHelper<T>();
         }
 
         public virtual string CallAction(string actionName, Guid entityId, object inputParams)

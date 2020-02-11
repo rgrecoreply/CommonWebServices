@@ -1,0 +1,33 @@
+﻿@using CRMWebCommon.Entities
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Subject</th>
+                        <th scope="col">Location</th>
+                        <th scope="col">StartTime</th>
+                        <th scope="col">EndTime</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Appointment appointment in ViewBag.Appointments)
+                    {
+                        <tr>
+                            <td>@appointment.Subject</td>
+                            <td>@appointment.Location</td>
+                            <td>@appointment.StartTime</td>
+                            <td>@appointment.EndTime</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+

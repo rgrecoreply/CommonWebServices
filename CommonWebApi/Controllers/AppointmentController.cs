@@ -16,12 +16,11 @@ using System.Web.Http.ModelBinding;
 namespace CommonWebApi.Controllers
 {
     [RoutePrefix("api/appointments")]
-    public class AppointmentController: ApiController
+    public class AppointmentController: BaseController<Appointment>
     {
         private readonly IAppointmentService _service;
-        private readonly QueryHelper<Appointment> _query = new QueryHelper<Appointment>();
 
-        public AppointmentController(IAppointmentService service)
+        public AppointmentController(IAppointmentService service): base()
         {
             _service = service;
         }
@@ -42,25 +41,25 @@ namespace CommonWebApi.Controllers
             {
                 foreach (Filter filterObj in FilterModelBinder.BindModel(filters))
                     if (String.IsNullOrEmpty(filterObj.FilterValue))
-                        _query.AddCondition(filterObj.FilterName, QueryCondition.Get(filterObj.FilterOperator));
+                        query.AddCondition(filterObj.FilterName, QueryCondition.Get(filterObj.FilterOperator));
                     else
-                        _query.AddCondition(filterObj.FilterName, QueryCondition.Get(filterObj.FilterOperator), filterObj.FilterValue);
+                        query.AddCondition(filterObj.FilterName, QueryCondition.Get(filterObj.FilterOperator), filterObj.FilterValue);
 
-                return Ok(_service.GetMultiple(_query.AllColumns()));
+                return Ok(_service.GetMultiple(query.AllColumns()));
             }
             else if (String.IsNullOrEmpty(filters))
             {
-                return Ok(_service.GetMultiple(_query.AddColumns(columns.Split(','))));
+                return Ok(_service.GetMultiple(query.AddColumns(columns.Split(','))));
             }
             else
             {
                 foreach (Filter filterObj in FilterModelBinder.BindModel(filters))
                     if (String.IsNullOrEmpty(filterObj.FilterValue))
-                        _query.AddCondition(filterObj.FilterName, QueryCondition.Get(filterObj.FilterOperator));
+                        query.AddCondition(filterObj.FilterName, QueryCondition.Get(filterObj.FilterOperator));
                     else
-                        _query.AddCondition(filterObj.FilterName, QueryCondition.Get(filterObj.FilterOperator), filterObj.FilterValue);
+                        query.AddCondition(filterObj.FilterName, QueryCondition.Get(filterObj.FilterOperator), filterObj.FilterValue);
 
-                return Ok(_service.GetMultiple(_query.AddColumns(columns.Split(','))));
+                return Ok(_service.GetMultiple(query.AddColumns(columns.Split(','))));
             }
 
         }
